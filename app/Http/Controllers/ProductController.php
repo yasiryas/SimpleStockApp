@@ -68,7 +68,7 @@ class ProductController extends Controller
     {
         $latest = Product::latest('id')->first();
         $nextId = $latest ? $latest->id + 1 : 1;
-        return 'PRD-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
+        return 'BRG-' . str_pad($nextId, 6, '0', STR_PAD_LEFT);
     }
 
     public function store(Request $request): RedirectResponse

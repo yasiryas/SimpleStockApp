@@ -12,7 +12,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'sku' => 'BRG-' . str_pad($this->faker->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT),
+            'sku' => 'BRG-' . str_pad($this->faker->unique()->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT),
             'nama' => $this->faker->word(),
             'satuan' => $this->faker->randomElement(['Pcs', 'Kg', 'Liter', 'Botol', 'Dus', 'Karung', 'Kaleng']),
             'stok_saat_ini' => $this->faker->numberBetween(0, 200),
