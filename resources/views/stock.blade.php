@@ -116,7 +116,8 @@
         </template>
 
         {{-- Modal Stok In / Out / Return --}}
-        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeModal()" @keydown.escape="closeModal()">
+        <div x-show="showModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
+        <div x-show="showModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeModal()" @keydown.escape="closeModal()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5" x-text="modalTitle"></h3>
@@ -171,7 +172,8 @@
             </div>
         </div>
         {{-- Modal Filter Tanggal --}}
-        <div x-show="showFilterModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeFilter()" @keydown.escape="closeFilter()">
+        <div x-show="showFilterModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
+        <div x-show="showFilterModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeFilter()" @keydown.escape="closeFilter()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-5">Filter Tanggal</h3>

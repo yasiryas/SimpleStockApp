@@ -96,7 +96,8 @@
         </div>
 
         {{-- Modal Create/Edit --}}
-        <div x-show="showForm" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeForm()" @keydown.escape="closeForm()">
+        <div x-show="showForm" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
+        <div x-show="showForm" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeForm()" @keydown.escape="closeForm()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5" x-text="editId ? 'Edit Pengguna' : 'Tambah Pengguna'"></h3>
@@ -153,7 +154,8 @@
         </div>
 
         {{-- Modal Delete --}}
-        <div x-show="showDelete" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeDelete()" @keydown.escape="closeDelete()">
+        <div x-show="showDelete" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
+        <div x-show="showDelete" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeDelete()" @keydown.escape="closeDelete()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
