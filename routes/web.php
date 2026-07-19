@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShipmentController;
@@ -40,7 +41,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/products/{product}',  [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
-    // Stock API (AJAX polling)
+    // Dashboard API (AJAX polling)
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats'])->name('dashboard.stats');
     Route::get('/products/stock', [ProductController::class, 'getStock'])->name('products.stock');
     Route::get('/dashboard/products', [ProductController::class, 'dashboardProducts'])->name('dashboard.products');
 

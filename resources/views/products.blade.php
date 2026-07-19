@@ -180,7 +180,7 @@
                     @if (session('success'))
                         this.$store.toast.open('{{ session('success') }}');
                     @endif
-                    this.pollingInterval = setInterval(() => this.fetchProducts(), 30000);
+                    this.pollingInterval = setInterval(() => this.fetchProducts(), 5000);
                 },
 
                 async fetchProducts() {

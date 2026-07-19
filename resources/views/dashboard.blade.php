@@ -12,7 +12,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900 mt-2">{{ $products->count() }}</p>
+                <p class="text-2xl font-bold text-gray-900 mt-2" x-text="totalProducts">{{ $products->count() }}</p>
             </div>
             <div class="bg-white rounded-xl border border-gray-200 p-5">
                 <div class="flex items-center justify-between">
@@ -77,23 +77,21 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
-                            @forelse ($recent_movements as $m)
+                            <template x-for="m in recentMovements" :key="m.id">
                             <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-5 py-3 text-gray-500 whitespace-nowrap">{{ $m->created_at->locale('id')->translatedFormat('d F H:i') }}</td>
-                                <td class="px-5 py-3 font-medium text-gray-900">{{ $m->product->nama ?? '-' }}</td>
+                                <td class="px-5 py-3 text-gray-500 whitespace-nowrap" x-text="m.created_at"></td>
+                                <td class="px-5 py-3 font-medium text-gray-900" x-text="m.product"></td>
                                 <td class="px-5 py-3">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold
-                                        {{ $m->tipe === 'in' ? 'bg-green-50 text-green-700' : ($m->tipe === 'out' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700') }}">
-                                        {{ $m->tipe === 'in' ? 'MASUK' : ($m->tipe === 'out' ? 'KELUAR' : 'RETUR') }}
-                                    </span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
+                                          :class="m.tipe === 'in' ? 'bg-green-50 text-green-700' : (m.tipe === 'out' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700')"
+                                          x-text="m.tipe === 'in' ? 'MASUK' : (m.tipe === 'out' ? 'KELUAR' : 'RETUR')"></span>
                                 </td>
-                                <td class="px-5 py-3 font-mono text-gray-900">{{ $m->qty }}</td>
+                                <td class="px-5 py-3 font-mono text-gray-900" x-text="m.qty"></td>
                             </tr>
-                            @empty
-                            <tr>
+                            </template>
+                            <tr x-show="recentMovements.length === 0">
                                 <td colspan="4" class="px-5 py-10 text-center text-gray-400">Belum ada mutasi stok.</td>
                             </tr>
-                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -198,16 +196,38 @@
                 products: [],
                 paginatedProducts: [],
                 pagination: { current_page: 1, last_page: 1, from: 0, to: 0, total: 0 },
+                totalProducts: {{ $products->count() }},
                 totalStock: {{ $total_stock }},
                 lowStockCount: {{ $low_stock_count }},
                 activeShipments: {{ $shipment_draft + $shipment_sent }},
                 pendingReturns: {{ $pending_returns }},
+                recentMovements: [],
                 pollingInterval: null,
 
                 init() {
+                    this.fetchStats();
                     this.fetchStock();
                     this.fetchPaginated(1);
-                    this.pollingInterval = setInterval(() => this.fetchStock(), 5000);
+                    this.pollingInterval = setInterval(() => {
+                        this.fetchStats();
+                        this.fetchStock();
+                        this.fetchPaginated(this.pagination.current_page);
+                    }, 5000);
+                },
+
+                async fetchStats() {
+                    try {
+                        const response = await fetch('{{ route('dashboard.stats') }}');
+                        const data = await response.json();
+                        this.totalProducts = data.total_products;
+                        this.totalStock = data.total_stock;
+                        this.lowStockCount = data.low_stock_count;
+                        this.activeShipments = data.active_shipments;
+                        this.pendingReturns = data.pending_returns;
+                        this.recentMovements = data.recent_movements;
+                    } catch (e) {
+                        console.error('Failed to fetch dashboard stats:', e);
+                    }
                 },
 
                 async fetchStock() {

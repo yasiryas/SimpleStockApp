@@ -355,7 +355,7 @@
                     @if (session('success'))
                         this.$store.toast.open('{{ session('success') }}');
                     @endif
-                    setInterval(() => this.fetchShipments(), 30000);
+                    setInterval(() => this.fetchShipments(), 5000);
                 },
 
                 async fetchShipments() {
