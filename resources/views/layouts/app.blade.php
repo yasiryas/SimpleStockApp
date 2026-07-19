@@ -83,14 +83,23 @@
                    }"
                    x-on:resize.window="if(window.innerWidth >= 1024) $store.sidebar.mobileOpen = false">
 
-                {{-- Logo --}}
-                <div class="flex items-center h-16 border-b border-indigo-600" :class="$store.sidebar.collapsed ? 'justify-center px-2' : 'gap-3 px-6'">
-                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                        </svg>
+                {{-- Logo & Toggle --}}
+                <div class="flex items-center h-16 border-b border-indigo-600" :class="$store.sidebar.collapsed ? 'justify-center px-2' : 'gap-1 px-2'">
+                    <div @click="if($store.sidebar.collapsed) $store.sidebar.toggle()"
+                         class="flex items-center shrink-0" :class="$store.sidebar.collapsed ? 'cursor-pointer' : ''">
+                        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            </svg>
+                        </div>
+                        <span x-show="!$store.sidebar.collapsed" x-cloak class="text-white font-bold text-base tracking-tight whitespace-nowrap ml-3">{{ config('app.name') }}</span>
                     </div>
-                    <span x-show="!$store.sidebar.collapsed" x-cloak class="text-white font-bold text-base tracking-tight whitespace-nowrap">{{ config('app.name') }}</span>
+                    <button @click="$store.sidebar.toggle()" x-show="!$store.sidebar.collapsed"
+                            class="flex items-center justify-center w-10 h-10 rounded-lg text-indigo-200/80 hover:text-white hover:bg-indigo-500/20 transition-all duration-150 shrink-0 ml-auto">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
                 </div>
 
                 {{-- Nav --}}
@@ -132,16 +141,8 @@
                     @endif
                 </nav>
 
-                {{-- Collapse toggle (desktop) & Logout --}}
-                <div class="border-t border-indigo-600 px-3 py-3 space-y-1">
-                    <button @click="$store.sidebar.toggle()"
-                            class="hidden lg:flex items-center justify-center w-full rounded-lg text-sm font-medium text-indigo-200/80 hover:text-white hover:bg-indigo-500/20 transition-all duration-150"
-                            :class="$store.sidebar.collapsed ? 'h-10 w-10 mx-auto' : 'gap-3 px-3 py-2.5'">
-                        <svg class="w-5 h-5 shrink-0 transition-transform duration-300" :class="$store.sidebar.collapsed ? '' : 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
-                        </svg>
-                        <span x-show="!$store.sidebar.collapsed" x-cloak class="text-xs">Sembunyikan</span>
-                    </button>
+                {{-- Logout --}}
+                <div class="border-t border-indigo-600 px-3 py-3">
                     <button @click="showLogoutModal = true"
                             class="flex items-center rounded-lg text-sm font-medium text-indigo-200/80 hover:text-white hover:bg-indigo-500/20 transition-all duration-150 w-full"
                             :class="$store.sidebar.collapsed ? 'justify-center h-10 w-10 mx-auto' : 'gap-3 px-3 py-2.5'">
