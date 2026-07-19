@@ -360,7 +360,7 @@
                 },
 
                 showToast(message, type = 'success') {
-                    this.$store.toast.show(message, type);
+                    this.$store.toast.open(message, type);
                 }
             }
         }

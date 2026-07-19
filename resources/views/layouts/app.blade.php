@@ -20,7 +20,7 @@
                     type: 'success',
                     progress: 100,
                     interval: null,
-                    show(message, type = 'success', duration = 5000) {
+                    open(message, type = 'success', duration = 5000) {
                         if (this.interval) clearInterval(this.interval);
                         this.show = true;
                         this.message = message;

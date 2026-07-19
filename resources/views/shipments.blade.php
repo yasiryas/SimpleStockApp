@@ -348,7 +348,7 @@
                 async init() {
                     await this.fetchShipments();
                     @if (session('success'))
-                        this.$store.toast.show('{{ session('success') }}');
+                        this.$store.toast.open('{{ session('success') }}');
                     @endif
                     setInterval(() => this.fetchShipments(), 30000);
                 },

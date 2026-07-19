@@ -289,7 +289,7 @@
                 async init() {
                     await this.fetchReturns();
                     @if (session('success'))
-                        this.$store.toast.show('{{ session('success') }}');
+                        this.$store.toast.open('{{ session('success') }}');
                     @endif
                     setInterval(() => this.fetchReturns(), 30000);
                 },
