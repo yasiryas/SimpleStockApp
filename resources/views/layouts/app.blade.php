@@ -74,7 +74,7 @@
                  class="fixed inset-0 z-30 bg-black/40 lg:hidden" @click="$store.sidebar.closeMobile()"></div>
 
             {{-- Sidebar --}}
-            <aside class="fixed inset-y-0 left-0 z-40 bg-indigo-700 flex flex-col transition-all duration-300 ease-out lg:translate-x-0"
+            <aside class="fixed inset-y-0 left-0 z-40 bg-indigo-700 flex flex-col transition-all duration-300 ease-out lg:translate-x-0 w-64"
                    :class="{
                        'w-64': !$store.sidebar.collapsed,
                        'w-16': $store.sidebar.collapsed,
@@ -211,7 +211,6 @@
                     {{ $slot }}
                 </main>
             </div>
-        </div>
 
         {{-- Logout Modal --}}
         <div x-show="showLogoutModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
@@ -250,6 +249,7 @@
                      :class="$store.toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
                      :style="'width: ' + $store.toast.progress + '%'"></div>
             </div>
+        </div>
         </div>
     </body>
 </html>
