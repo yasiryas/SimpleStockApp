@@ -14,7 +14,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div x-data="{ showLogoutModal: false, toast: { show: false, message: '', type: 'success' } }" x-init="$watch('toast.show', v => { if (v) setTimeout(() => toast.show = false, 4000) })" class="min-h-screen bg-gray-50">
+        <div x-data="{ showLogoutModal: false, showUserMenu: false, toast: { show: false, message: '', type: 'success' } }" x-init="$watch('toast.show', v => { if (v) setTimeout(() => toast.show = false, 4000) })" class="min-h-screen bg-gray-50">
             <div class="flex min-h-screen">
                 {{-- Sidebar --}}
                 <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-indigo-700 flex flex-col">
@@ -30,7 +30,7 @@
 
                     {{-- Nav --}}
                     <nav class="flex-1 px-3 py-5 space-y-1.5 overflow-y-auto">
-                        <p class="px-3 pb-2.5 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Menu</p>
+                        <p class="px-3 pb-2.5 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Menu Utama</p>
 
                         <a href="{{ route('dashboard') }}"
                            class="group flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-150 relative
@@ -43,6 +43,9 @@
                             </svg>
                             Dashboard
                         </a>
+
+                        <div class="my-4 border-t border-indigo-600/50"></div>
+                        <p class="px-3 pb-2.5 pt-1.5 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Inventaris</p>
 
                         <a href="{{ route('products.index') }}"
                            class="group flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-150 relative
@@ -68,6 +71,9 @@
                             Mutasi Stok
                         </a>
 
+                        <div class="my-4 border-t border-indigo-600/50"></div>
+                        <p class="px-3 pb-2.5 pt-1.5 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Logistik</p>
+
                         <a href="{{ route('shipments.index') }}"
                            class="group flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-150 relative
                                   {{ request()->routeIs('shipments.*') ? 'bg-indigo-500/40 text-white' : 'text-indigo-200/80 hover:text-white hover:bg-indigo-500/20' }}">
@@ -78,21 +84,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-1m0 0l2 1m-2-1v10a1 1 0 002 1h12a1 1 0 002-1v-9a1 1 0 00-1-1h-5m-8 4h12"/>
                             </svg>
                             Pengiriman
-                        </a>
-
-                        <div class="my-4 border-t border-indigo-600/50"></div>
-                        <p class="px-3 pb-2.5 pt-1.5 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Lainnya</p>
-
-                        <a href="{{ route('profile.edit') }}"
-                           class="group flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-150 relative
-                                  {{ request()->routeIs('profile.*') ? 'bg-indigo-500/40 text-white' : 'text-indigo-200/80 hover:text-white hover:bg-indigo-500/20' }}">
-                            @if(request()->routeIs('profile.*'))
-                                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white"></span>
-                            @endif
-                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('profile.*') ? '' : 'opacity-70 group-hover:opacity-100' }} transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                            Profil Saya
                         </a>
 
                         <a href="{{ route('returns.index') }}"
@@ -107,6 +98,9 @@
                             Retur
                         </a>
 
+                        <div class="my-4 border-t border-indigo-600/50"></div>
+                        <p class="px-3 pb-2.5 pt-1.5 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Pengaturan</p>
+
                         <a href="{{ route('users.index') }}"
                            class="group flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-150 relative
                                   {{ request()->routeIs('users.*') ? 'bg-indigo-500/40 text-white' : 'text-indigo-200/80 hover:text-white hover:bg-indigo-500/20' }}">
@@ -119,17 +113,6 @@
                             Manajemen Pengguna
                         </a>
                     </nav>
-
-                    {{-- Logout --}}
-                    <div class="border-t border-indigo-600 p-4">
-                    <button @click="showLogoutModal = true"
-                            class="flex items-center gap-3 w-full px-3 py-3 rounded-lg text-sm font-medium text-indigo-200/80 hover:text-white hover:bg-indigo-500/20 transition-all duration-150">
-                            <svg class="w-5 h-5 shrink-0 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                            Logout
-                        </button>
-                    </div>
                 </aside>
 
                 {{-- Main --}}
@@ -138,13 +121,39 @@
                     <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8">
                         <h1 class="text-xl font-semibold text-gray-900">{{ $header ?? 'Dashboard' }}</h1>
 
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
-                                {{ substr(Auth::user()->name, 0, 1) }}
-                            </div>
-                            <div class="text-sm">
-                                <p class="font-medium text-gray-900 leading-tight">{{ Auth::user()->name }}</p>
-                                <p class="text-gray-500 text-xs leading-tight">{{ Auth::user()->email }}</p>
+                        <div class="relative" @click.outside="showUserMenu = false">
+                            <button @click="showUserMenu = !showUserMenu"
+                                    class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
+                                <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-semibold shrink-0">
+                                    {{ substr(Auth::user()->name, 0, 1) }}
+                                </div>
+                                <div class="text-sm text-left">
+                                    <p class="font-medium text-gray-900 leading-tight">{{ Auth::user()->name }}</p>
+                                    <p class="text-gray-500 text-xs leading-tight">{{ Auth::user()->email }}</p>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': showUserMenu }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+
+                            <div x-show="showUserMenu" x-cloak x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-1"
+                                 class="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-200/50 overflow-hidden">
+                                <a href="{{ route('profile.edit') }}"
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    Profil Saya
+                                </a>
+                                <hr class="border-gray-100">
+                                <button @click="showLogoutModal = true; showUserMenu = false"
+                                        class="flex items-center gap-3 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    Logout
+                                </button>
                             </div>
                         </div>
                     </header>
