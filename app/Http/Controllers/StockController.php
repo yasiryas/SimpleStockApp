@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\StockMovement;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,7 +65,7 @@ class StockController extends Controller
         return Excel::download(new StockMovementsExport($request), 'stock-movements-' . date('Y-m-d') . '.xlsx');
     }
 
-    public function storeStockIn(Request $request): RedirectResponse
+    public function storeStockIn(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
@@ -95,7 +96,7 @@ class StockController extends Controller
         return redirect()->back()->with('success', 'Stok berhasil ditambahkan.');
     }
 
-    public function storeStockOut(Request $request): RedirectResponse
+    public function storeStockOut(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
