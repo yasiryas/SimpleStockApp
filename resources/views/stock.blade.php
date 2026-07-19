@@ -133,7 +133,6 @@
                                 placeholder="Pilih produk..."
                                 :options="$products->pluck('sku_nama_stok', 'id')"
                                 required
-                                :key="'product-' + formKey"
                             />
                             <template x-if="errors.product_id">
                                 <p class="mt-1 text-xs text-red-600" x-text="errors.product_id.join(', ')"></p>
@@ -219,7 +218,6 @@
                 pagination: { current_page: 1, last_page: 1, from: 0, to: 0, total: 0 },
                 errors: {},
                 submitted: false,
-                formKey: 0,
 
                 async init() {
                     await this.fetchMovements();
@@ -309,7 +307,6 @@
                     this.submitLabel = 'Masukkan';
                     this.errors = {};
                     this.submitted = false;
-                    this.formKey++;
                     this.showModal = true;
                     this.$nextTick(() => { if (this.$refs.stockForm) this.$refs.stockForm.reset(); });
                 },
@@ -320,7 +317,6 @@
                     this.submitLabel = 'Keluarkan';
                     this.errors = {};
                     this.submitted = false;
-                    this.formKey++;
                     this.showModal = true;
                     this.$nextTick(() => { if (this.$refs.stockForm) this.$refs.stockForm.reset(); });
                 },
