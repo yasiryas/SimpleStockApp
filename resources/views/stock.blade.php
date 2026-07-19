@@ -20,7 +20,7 @@
                     </svg>
                     Filter Tanggal
                 </button>
-                <a href="{{ route('stock.export', request()->query()) }}"
+                <a :href="exportUrl"
                    class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -361,6 +361,14 @@
 
                 showToast(message, type = 'success') {
                     this.$store.toast.open(message, type);
+                },
+
+                get exportUrl() {
+                    const params = new URLSearchParams();
+                    if (this.dateFrom) params.set('date_from', this.dateFrom);
+                    if (this.dateTo) params.set('date_to', this.dateTo);
+                    const qs = params.toString();
+                    return '{{ route('stock.export') }}' + (qs ? '?' + qs : '');
                 }
             }
         }
