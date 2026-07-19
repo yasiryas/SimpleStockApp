@@ -12,9 +12,43 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('toast', {
+                    show: false,
+                    message: '',
+                    type: 'success',
+                    progress: 100,
+                    interval: null,
+                    show(message, type = 'success', duration = 5000) {
+                        if (this.interval) clearInterval(this.interval);
+                        this.show = true;
+                        this.message = message;
+                        this.type = type;
+                        this.progress = 100;
+                        const step = 100 / (duration / 50);
+                        this.interval = setInterval(() => {
+                            this.progress = Math.max(0, this.progress - step);
+                            if (this.progress <= 0) {
+                                clearInterval(this.interval);
+                                this.interval = null;
+                                this.show = false;
+                            }
+                        }, 50);
+                    },
+                    close() {
+                        if (this.interval) {
+                            clearInterval(this.interval);
+                            this.interval = null;
+                        }
+                        this.show = false;
+                    }
+                });
+            });
+        </script>
     </head>
     <body class="font-sans antialiased">
-        <div x-data="{ showLogoutModal: false, showUserMenu: false, toast: { show: false, message: '', type: 'success', progress: 100 }, toastInterval: null, showToast(message, type = 'success', duration = 5000) { if (this.toastInterval) clearInterval(this.toastInterval); this.toast.show = true; this.toast.message = message; this.toast.type = type; this.toast.progress = 100; const step = 100 / (duration / 50); this.toastInterval = setInterval(() => { this.toast.progress = Math.max(0, this.toast.progress - step); if (this.toast.progress <= 0) { clearInterval(this.toastInterval); this.toastInterval = null; this.toast.show = false; } }, 50); }, closeToast() { if (this.toastInterval) { clearInterval(this.toastInterval); this.toastInterval = null; } this.toast.show = false; } }" class="min-h-screen bg-gray-50">
+        <div x-data="{ showLogoutModal: false, showUserMenu: false }" class="min-h-screen bg-gray-50">
             <div class="flex min-h-screen">
                 {{-- Sidebar --}}
                 <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-indigo-700 flex flex-col">
@@ -201,17 +235,17 @@
             </div>
 
             {{-- Toast/Alert --}}
-            <div x-show="toast.show" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2"
+            <div x-show="$store.toast.show" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-2"
                  class="fixed top-4 right-4 z-50 overflow-hidden rounded-xl shadow-lg border text-sm font-medium"
-                 :class="toast.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'">
+                 :class="$store.toast.type === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'">
                 <div class="flex items-center gap-3 px-5 py-3">
-                    <span x-text="toast.message"></span>
-                    <button @click="closeToast()" class="ml-2 text-lg leading-none hover:opacity-70 shrink-0" :class="toast.type === 'success' ? 'text-green-700' : 'text-red-700'">&times;</button>
+                    <span x-text="$store.toast.message"></span>
+                    <button @click="$store.toast.close()" class="ml-2 text-lg leading-none hover:opacity-70 shrink-0" :class="$store.toast.type === 'success' ? 'text-green-700' : 'text-red-700'">&times;</button>
                 </div>
                 <div class="h-1 w-full bg-gray-200/50">
                     <div class="h-full transition-all duration-[50ms] linear"
-                         :class="toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
-                         :style="'width: ' + toast.progress + '%'"></div>
+                         :class="$store.toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'"
+                         :style="'width: ' + $store.toast.progress + '%'"></div>
                 </div>
             </div>
         </div>

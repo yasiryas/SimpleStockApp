@@ -205,7 +205,7 @@
                 async init() {
                     await this.fetchUsers();
                     @if (session('success'))
-                        this.$root.showToast('{{ session('success') }}');
+                        this.$store.toast.show('{{ session('success') }}');
                     @endif
                     setInterval(() => this.fetchUsers(), 30000);
                 },

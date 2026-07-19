@@ -122,7 +122,7 @@
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5" x-text="modalTitle"></h3>
 
-                <form @submit.prevent="submitStockForm" method="POST">
+                <form @submit.prevent="submitStockForm" method="POST" x-ref="stockForm">
                     @csrf
 
                     <div class="space-y-4">
@@ -133,6 +133,7 @@
                                 placeholder="Pilih produk..."
                                 :options="$products->pluck('sku_nama_stok', 'id')"
                                 required
+                                :key="'product-' + formKey"
                             />
                             <template x-if="errors.product_id">
                                 <p class="mt-1 text-xs text-red-600" x-text="errors.product_id.join(', ')"></p>
@@ -218,6 +219,7 @@
                 pagination: { current_page: 1, last_page: 1, from: 0, to: 0, total: 0 },
                 errors: {},
                 submitted: false,
+                formKey: 0,
 
                 async init() {
                     await this.fetchMovements();
@@ -307,7 +309,9 @@
                     this.submitLabel = 'Masukkan';
                     this.errors = {};
                     this.submitted = false;
+                    this.formKey++;
                     this.showModal = true;
+                    this.$nextTick(() => { if (this.$refs.stockForm) this.$refs.stockForm.reset(); });
                 },
                 openOut() {
                     this.tipe = 'out';
@@ -316,7 +320,9 @@
                     this.submitLabel = 'Keluarkan';
                     this.errors = {};
                     this.submitted = false;
+                    this.formKey++;
                     this.showModal = true;
+                    this.$nextTick(() => { if (this.$refs.stockForm) this.$refs.stockForm.reset(); });
                 },
                 closeModal() {
                     this.showModal = false;
@@ -358,7 +364,7 @@
                 },
 
                 showToast(message, type = 'success') {
-                    if (this.$root.showToast) this.$root.showToast(message, type);
+                    this.$store.toast.show(message, type);
                 }
             }
         }

@@ -178,7 +178,7 @@
                 async init() {
                     await this.fetchProducts();
                     @if (session('success'))
-                        this.$root.showToast('{{ session('success') }}');
+                        this.$store.toast.show('{{ session('success') }}');
                     @endif
                     this.pollingInterval = setInterval(() => this.fetchProducts(), 30000);
                 },
@@ -285,7 +285,7 @@
                 },
 
                 showToast(message, type = 'success') {
-                    if (this.$root.showToast) this.$root.showToast(message, type);
+                    this.$store.toast.show(message, type);
                 },
 
                 openCreate() {
