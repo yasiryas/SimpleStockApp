@@ -138,7 +138,7 @@
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <input type="text" x-model="search" placeholder="Cari produk..."
+                    <input type="text" x-model="search" @input.debounce.300ms="fetchPaginated(1)" placeholder="Cari produk..."
                            class="pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 w-56">
                 </div>
             </div>
@@ -153,7 +153,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        <template x-for="product in filteredProducts" :key="product.id">
+                        <template x-for="product in paginatedProducts" :key="product.id">
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-5 py-3.5 font-mono text-xs text-gray-500" x-text="product.sku"></td>
                                 <td class="px-5 py-3.5 font-medium text-gray-900" x-text="product.nama"></td>
@@ -165,12 +165,29 @@
                                 </td>
                             </tr>
                         </template>
-                        <tr x-show="filteredProducts.length === 0">
+                        <tr x-show="paginatedProducts.length === 0">
                             <td colspan="4" class="px-5 py-10 text-center text-gray-400">Produk tidak ditemukan.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <template x-if="pagination && pagination.last_page > 1">
+                <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+                    <div class="text-sm text-gray-500" x-text="'Menampilkan ' + pagination.from + ' - ' + pagination.to + ' dari ' + pagination.total + ' produk'"></div>
+                    <div class="flex gap-1">
+                        <button @click="fetchPaginated(pagination.current_page - 1)" :disabled="pagination.current_page === 1"
+                                class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">Sebelumnya</button>
+                        <template x-for="page in paginationPages" :key="page">
+                            <button @click="fetchPaginated(page)"
+                                    class="w-8 h-8 text-sm font-medium rounded-lg transition-colors"
+                                    :class="page === pagination.current_page ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'"
+                                    x-text="page"></button>
+                        </template>
+                        <button @click="fetchPaginated(pagination.current_page + 1)" :disabled="pagination.current_page === pagination.last_page"
+                                class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">Selanjutnya</button>
+                    </div>
+                </div>
+            </template>
         </div>
     </div>
 
@@ -179,6 +196,8 @@
             return {
                 search: '',
                 products: [],
+                paginatedProducts: [],
+                pagination: { current_page: 1, last_page: 1, from: 0, to: 0, total: 0 },
                 totalStock: {{ $total_stock }},
                 lowStockCount: {{ $low_stock_count }},
                 activeShipments: {{ $shipment_draft + $shipment_sent }},
@@ -187,6 +206,7 @@
 
                 init() {
                     this.fetchStock();
+                    this.fetchPaginated(1);
                     this.pollingInterval = setInterval(() => this.fetchStock(), 5000);
                 },
 
@@ -208,16 +228,34 @@
                     }
                 },
 
+                async fetchPaginated(page) {
+                    try {
+                        const params = new URLSearchParams();
+                        if (this.search) params.set('search', this.search);
+                        params.set('page', page);
+
+                        const response = await fetch('{{ route('dashboard.products') }}?' + params.toString(), {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        const data = await response.json();
+                        this.paginatedProducts = data.products;
+                        this.pagination = data.pagination;
+                    } catch (e) {
+                        console.error('Failed to fetch paginated products:', e);
+                    }
+                },
+
                 get lowStockProducts() {
                     return this.products.filter(p => p.stok_saat_ini <= 5);
                 },
 
-                get filteredProducts() {
-                    if (!this.search) return this.products;
-                    const q = this.search.toLowerCase();
-                    return this.products.filter(p =>
-                        p.nama.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
-                    );
+                get paginationPages() {
+                    if (!this.pagination) return [];
+                    const pages = [];
+                    const start = Math.max(1, this.pagination.current_page - 2);
+                    const end = Math.min(this.pagination.last_page, start + 4);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    return pages;
                 }
             }
         }

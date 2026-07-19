@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
 
     // Stock API (AJAX polling)
     Route::get('/products/stock', [ProductController::class, 'getStock'])->name('products.stock');
+    Route::get('/dashboard/products', [ProductController::class, 'dashboardProducts'])->name('dashboard.products');
 
     // Stock mutations
     Route::get('/stock', [StockController::class, 'index'])->name('stock.index');

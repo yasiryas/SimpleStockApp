@@ -45,6 +45,33 @@ class ProductController extends Controller
         ]);
     }
 
+    public function dashboardProducts(Request $request): JsonResponse
+    {
+        $query = Product::select('id', 'sku', 'nama', 'satuan', 'stok_saat_ini');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('nama', 'like', "%{$s}%")
+                  ->orWhere('sku', 'like', "%{$s}%");
+            });
+        }
+
+        $products = $query->orderBy('stok_saat_ini')->paginate(10);
+
+        return response()->json([
+            'products'   => $products->items(),
+            'pagination' => [
+                'current_page' => $products->currentPage(),
+                'last_page'    => $products->lastPage(),
+                'total'        => $products->total(),
+                'per_page'     => $products->perPage(),
+                'from'         => $products->firstItem(),
+                'to'           => $products->lastItem(),
+            ],
+        ]);
+    }
+
     public function getStock(): JsonResponse
     {
         $products = Product::select('id', 'sku', 'nama', 'satuan', 'stok_saat_ini')->get();
