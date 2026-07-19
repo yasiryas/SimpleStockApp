@@ -3,14 +3,14 @@
 
     <div x-data="userModal()" class="space-y-4">
         {{-- Actions --}}
-        <div class="flex justify-between items-center gap-3">
-            <form method="GET" action="{{ route('users.index') }}" class="relative">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <form method="GET" action="{{ route('users.index') }}" class="relative w-full sm:w-auto">
                 <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
                 <input type="text" x-model="search" @input.debounce.300ms="fetchUsers()"
                        placeholder="Cari (Nama, Email)..."
-                       class="pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 w-64">
+                       class="pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 w-full sm:w-64">
             </form>
             <div class="flex gap-3">
                 <a href="{{ route('users.export', request()->query()) }}"
@@ -76,7 +76,7 @@
             </div>
             {{-- Pagination --}}
             @if ($users->lastPage() > 1)
-                <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+                <div class="px-5 py-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div class="text-sm text-gray-500">
                         Menampilkan {{ $users->firstItem() }} - {{ $users->lastItem() }} dari {{ $users->total() }} data
                     </div>

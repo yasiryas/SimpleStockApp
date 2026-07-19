@@ -10,7 +10,7 @@
                 </svg>
                 <input type="text" x-model="search" @input.debounce.300ms="fetchShipments()"
                        placeholder="Cari (No. Shipment, Tujuan, Status, User)..."
-                       class="pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 w-64">
+                       class="pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 w-full sm:w-64">
             </div>
             <div class="flex flex-wrap gap-2 w-full sm:w-auto">
                 <button @click="openFilter" type="button"
@@ -109,7 +109,7 @@
             </div>
             {{-- Pagination --}}
             <template x-if="pagination && pagination.last_page > 1">
-                <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+                <div class="px-5 py-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div class="text-sm text-gray-500" x-text="paginationText"></div>
                     <div class="flex gap-1">
                         <button @click="goToPage(pagination.current_page - 1)" :disabled="pagination.current_page === 1"
