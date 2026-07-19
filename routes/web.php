@@ -16,8 +16,16 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+    $products = Product::latest()->get();
     return view('dashboard', [
-        'products' => Product::latest()->get(),
+        'products'        => $products,
+        'total_stock'     => $products->sum('stok_saat_ini'),
+        'low_stock_count' => $products->where('stok_saat_ini', '<=', 5)->count(),
+        'shipment_draft'  => Shipment::where('status', 'draft')->count(),
+        'shipment_sent'   => Shipment::where('status', 'dikirim')->count(),
+        'shipment_done'   => Shipment::where('status', 'selesai')->count(),
+        'pending_returns' => \App\Models\StockReturn::where('status', 'pending')->count(),
+        'recent_movements'=> StockMovement::with('product', 'user')->latest()->take(5)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -51,9 +59,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/return/{return}/approve', [StockReturnController::class, 'approve'])->name('return.approve');
     Route::post('/return/{return}/reject',  [StockReturnController::class, 'reject'])->name('return.reject');
 
-    // User Management
-    Route::resource('users', UserController::class)->except(['show']);
-    Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
+    // User Management (admin only)
+    Route::middleware('can:admin')->group(function () {
+        Route::resource('users', UserController::class)->except(['show']);
+        Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
+    });
 
     // Products export
     Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');

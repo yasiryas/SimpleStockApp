@@ -132,6 +132,7 @@
                             Retur
                         </a>
 
+                        @can('admin')
                         <div class="my-4 border-t border-indigo-600/50"></div>
                         <p class="px-3 pb-2.5 pt-1.5 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Pengaturan</p>
 
@@ -146,6 +147,7 @@
                             </svg>
                             Manajemen Pengguna
                         </a>
+                        @endif
                     </nav>
 
                     {{-- Logout --}}
