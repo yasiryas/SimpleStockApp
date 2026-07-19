@@ -116,7 +116,7 @@
         </template>
 
         {{-- Modal Stok In / Out / Return --}}
-        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeModal()" @keydown.escape="closeModal()">
+        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeModal()" @keydown.escape="closeModal()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5" x-text="modalTitle"></h3>
@@ -171,7 +171,7 @@
             </div>
         </div>
         {{-- Modal Filter Tanggal --}}
-        <div x-show="showFilterModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeFilter()" @keydown.escape="closeFilter()">
+        <div x-show="showFilterModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeFilter()" @keydown.escape="closeFilter()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-5">Filter Tanggal</h3>

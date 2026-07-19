@@ -14,7 +14,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div x-data="{ showLogoutModal: false, toast: { show: false, message: '', type: 'success' } }" class="min-h-screen bg-gray-50">
+        <div x-data="{ showLogoutModal: false, toast: { show: false, message: '', type: 'success' } }" x-init="$watch('toast.show', v => { if (v) setTimeout(() => toast.show = false, 4000) })" class="min-h-screen bg-gray-50">
             <div class="flex min-h-screen">
                 {{-- Sidebar --}}
                 <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-indigo-700 flex flex-col">
@@ -157,7 +157,7 @@
             </div>
 
             {{-- Logout Modal --}}
-            <div x-show="showLogoutModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="showLogoutModal = false" @keydown.escape="showLogoutModal = false">
+            <div x-show="showLogoutModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-white/10 backdrop-blur-sm" @click.self="showLogoutModal = false" @keydown.escape="showLogoutModal = false">
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 text-center">
                     <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
                         <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

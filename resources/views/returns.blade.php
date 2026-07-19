@@ -129,7 +129,7 @@
         </div>
 
         {{-- Modal Create --}}
-        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeModal()" @keydown.escape="closeModal()">
+        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeModal()" @keydown.escape="closeModal()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5">Ajukan Retur</h3>
@@ -179,7 +179,7 @@
         </div>
 
         {{-- Modal Confirm Approve --}}
-        <div x-show="showConfirmApprove" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeConfirmApprove()" @keydown.escape="closeConfirmApprove()">
+        <div x-show="showConfirmApprove" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeConfirmApprove()" @keydown.escape="closeConfirmApprove()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
@@ -206,7 +206,7 @@
         </div>
 
         {{-- Modal Confirm Reject --}}
-        <div x-show="showConfirmReject" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeConfirmReject()" @keydown.escape="closeConfirmReject()">
+        <div x-show="showConfirmReject" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeConfirmReject()" @keydown.escape="closeConfirmReject()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
@@ -232,7 +232,7 @@
         </div>
 
         {{-- Modal Filter Tanggal --}}
-        <div x-show="showFilterModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeFilter()" @keydown.escape="closeFilter()">
+        <div x-show="showFilterModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeFilter()" @keydown.escape="closeFilter()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5">Filter Tanggal</h3>

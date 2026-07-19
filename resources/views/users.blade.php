@@ -96,7 +96,7 @@
         </div>
 
         {{-- Modal Create/Edit --}}
-        <div x-show="showForm" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeForm()" @keydown.escape="closeForm()">
+        <div x-show="showForm" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeForm()" @keydown.escape="closeForm()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5" x-text="editId ? 'Edit Pengguna' : 'Tambah Pengguna'"></h3>
@@ -153,7 +153,7 @@
         </div>
 
         {{-- Modal Delete --}}
-        <div x-show="showDelete" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeDelete()" @keydown.escape="closeDelete()">
+        <div x-show="showDelete" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-white/10 backdrop-blur-sm" @click.self="closeDelete()" @keydown.escape="closeDelete()">
             <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
