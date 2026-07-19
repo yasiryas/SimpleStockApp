@@ -243,7 +243,7 @@
 
                 formatDate(dateStr) {
                     const d = new Date(dateStr);
-                    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+                    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(',', '');
                 },
 
                 formatDateOnly(dateStr) {

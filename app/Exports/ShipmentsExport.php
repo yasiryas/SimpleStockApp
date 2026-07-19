@@ -32,21 +32,31 @@ class ShipmentsExport implements FromCollection, WithHeadings, WithMapping
             });
         }
 
+        if ($this->request && $this->request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $this->request->date_from);
+        }
+
+        if ($this->request && $this->request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $this->request->date_to);
+        }
+
         return $query->get();
     }
 
     public function headings(): array
     {
-        return ['No. Shipment', 'Tujuan', 'Status', 'Jumlah Item', 'Total Qty', 'No. Resi', 'User', 'Catatan', 'Dibuat Pada'];
+        return ['No. Shipment', 'Tujuan', 'Status', 'Item (Produk, Qty, Satuan)', 'Total Qty', 'No. Resi', 'User', 'Catatan', 'Dibuat Pada'];
     }
 
     public function map($s): array
     {
+        $items = $s->items->map(fn($i) => $i->product->nama . ' x' . $i->qty . ' ' . ($i->product->satuan ?? ''))->implode("\n");
+
         return [
             $s->no_shipment,
             $s->tujuan ?? '-',
             strtoupper($s->status),
-            $s->items->count(),
+            $items,
             $s->items->sum('qty'),
             $s->no_resi ?? '-',
             $s->user->name ?? '-',

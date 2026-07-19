@@ -54,7 +54,7 @@
                                         {{ ucfirst($user->role) }}
                                     </span>
                                 </td>
-                                <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $user->created_at->format('d M Y H:i') }}</td>
+                                <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $user->created_at->locale('id')->translatedFormat('d F Y H:i') }}</td>
                                 <td class="px-5 py-3.5 text-right">
                                     <button @click="openEdit({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}', '{{ $user->role }}')"
                                             class="text-indigo-600 hover:text-indigo-800 text-sm font-medium mr-3">Edit</button>

@@ -15,6 +15,18 @@ class Shipment extends Model
         'status',
     ];
 
+    protected $appends = ['items_count', 'total_qty'];
+
+    public function getItemsCountAttribute()
+    {
+        return $this->items->count();
+    }
+
+    public function getTotalQtyAttribute()
+    {
+        return $this->items->sum('qty');
+    }
+
     public function items()
     {
         return $this->hasMany(ShipmentItem::class);

@@ -21,7 +21,7 @@
                     </svg>
                     Filter Tanggal
                 </button>
-                <a href="{{ route('shipments.export', request()->query()) }}"
+                <a :href="exportUrl"
                    class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -77,7 +77,10 @@
                                           :class="s.status === 'selesai' ? 'bg-green-50 text-green-700' : (s.status === 'dikirim' ? 'bg-blue-50 text-blue-700' : 'bg-yellow-50 text-yellow-700')"
                                           x-text="s.status.toUpperCase()"></span>
                                 </td>
-                                <td class="px-5 py-3.5 text-gray-900" x-text="s.items_count + ' produk'"></td>
+                                <td class="px-5 py-3.5 text-gray-900">
+                                    <span x-text="s.items_count + ' item'"></span>
+                                    <span x-show="s.items.length" class="text-xs text-gray-400 ml-1" x-text="'(' + [...new Set(s.items.map(i => i.product?.satuan))].filter(Boolean).join(', ') + ')'"></span>
+                                </td>
                                 <td class="px-5 py-3.5 font-mono text-gray-900" x-text="s.total_qty"></td>
                                 <td class="px-5 py-3.5 text-gray-500" x-text="s.user?.name || '-'"></td>
                                 <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap" x-text="formatDate(s.created_at)"></td>
@@ -325,7 +328,7 @@
                 openIndex: -1,
                 productOptions: [
                     @foreach ($products as $p)
-                        { value: '{{ $p->id }}', label: '{{ $p->sku }} - {{ $p->nama }}' },
+                        { value: '{{ $p->id }}', label: '{{ $p->sku }} - {{ $p->nama }} ({{ $p->satuan }})' },
                     @endforeach
                 ],
                 // Confirm Sent
@@ -470,9 +473,12 @@
                     this.confirmDoneId = null;
                     this.confirmDoneNo = '';
                 },
-                formatDate(dateStr) {
-                    const d = new Date(dateStr);
-                    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+                get exportUrl() {
+                    const params = new URLSearchParams();
+                    if (this.dateFrom) params.set('date_from', this.dateFrom);
+                    if (this.dateTo) params.set('date_to', this.dateTo);
+                    const qs = params.toString();
+                    return '{{ route('shipments.export') }}' + (qs ? '?' + qs : '');
                 }
             }
         }
