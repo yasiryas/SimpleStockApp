@@ -2,24 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\StockUpdated;
 use App\Models\Product;
 use App\Models\StockMovement;
 use App\Models\StockReturn;
+use App\Exports\ReturnsExport;
+use App\Events\StockUpdated;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StockReturnController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = StockReturn::with('product', 'shipment', 'user')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('product', function ($pq) use ($search) {
+                    $pq->where('nama', 'like', "%{$search}%")
+                       ->orWhere('sku', 'like', "%{$search}%");
+                })
+                ->orWhere('alasan', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%")
+                ->orWhereHas('shipment', function ($sq) use ($search) {
+                    $sq->where('no_shipment', 'like', "%{$search}%");
+                })
+                ->orWhereHas('user', function ($uq) use ($search) {
+                    $uq->where('name', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $returns = $query->paginate(15)->withQueryString();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'returns' => $returns->items(),
+                'pagination' => [
+                    'current_page' => $returns->currentPage(),
+                    'last_page' => $returns->lastPage(),
+                    'total' => $returns->total(),
+                    'per_page' => $returns->perPage(),
+                    'from' => $returns->firstItem(),
+                    'to' => $returns->lastItem(),
+                ],
+            ]);
+        }
+
         return view('returns', [
-            'returns'  => StockReturn::with('product', 'shipment', 'user')->latest()->get(),
+            'returns'  => $returns,
             'products' => Product::orderBy('nama')->get(),
             'shipments' => \App\Models\Shipment::orderBy('created_at', 'desc')->get(),
         ]);
+    }
+
+    public function export(Request $request)
+    {
+        return Excel::download(new ReturnsExport($request), 'returns-' . date('Y-m-d') . '.xlsx');
     }
 
     public function store(Request $request): RedirectResponse

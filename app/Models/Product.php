@@ -32,4 +32,12 @@ class Product extends Model
     {
         return "{$this->sku} - {$this->nama}";
     }
+
+    public function getSkuNamaStokAttribute(): string
+    {
+        $stokLabel = $this->stok_saat_ini <= 5 
+            ? "<span class='text-red-600 font-medium'>Stok: {$this->stok_saat_ini}</span>"
+            : "Stok: {$this->stok_saat_ini}";
+        return "{$this->sku} - {$this->nama} ({$stokLabel})";
+    }
 }

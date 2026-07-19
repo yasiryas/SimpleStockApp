@@ -2,18 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\StockUpdated;
 use App\Models\Product;
 use App\Models\Shipment;
 use App\Models\ShipmentItem;
 use App\Models\StockMovement;
+use App\Events\StockUpdated;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ShipmentsExport;
 
 class ShipmentController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = Shipment::with('items.product', 'user')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('no_shipment', 'like', "%{$search}%")
+                  ->orWhere('tujuan', 'like', "%{$search}%")
+                  ->orWhere('status', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $shipments = $query->paginate(15)->withQueryString();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'shipments' => $shipments->items(),
+                'pagination' => [
+                    'current_page' => $shipments->currentPage(),
+                    'last_page' => $shipments->lastPage(),
+                    'total' => $shipments->total(),
+                    'per_page' => $shipments->perPage(),
+                    'from' => $shipments->firstItem(),
+                    'to' => $shipments->lastItem(),
+                ],
+            ]);
+        }
+
+        return view('shipments', [
+            'products'  => Product::orderBy('nama')->get(),
+            'shipments' => $shipments,
+        ]);
+    }
+
+    public function export(Request $request)
+    {
+        return Excel::download(new ShipmentsExport($request), 'shipments-' . date('Y-m-d') . '.xlsx');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([

@@ -5,15 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>SimpleStockApp</title>
 
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div x-data="{ showLogoutModal: false }" class="min-h-screen bg-gray-50">
+        <div x-data="{ showLogoutModal: false, toast: { show: false, message: '', type: 'success' } }" class="min-h-screen bg-gray-50">
             <div class="flex min-h-screen">
                 {{-- Sidebar --}}
                 <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-indigo-700 flex flex-col">
@@ -82,6 +83,18 @@
                         <div class="my-4 border-t border-indigo-600/50"></div>
                         <p class="px-3 pb-2.5 pt-1.5 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Lainnya</p>
 
+                        <a href="{{ route('profile.edit') }}"
+                           class="group flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-150 relative
+                                  {{ request()->routeIs('profile.*') ? 'bg-indigo-500/40 text-white' : 'text-indigo-200/80 hover:text-white hover:bg-indigo-500/20' }}">
+                            @if(request()->routeIs('profile.*'))
+                                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white"></span>
+                            @endif
+                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('profile.*') ? '' : 'opacity-70 group-hover:opacity-100' }} transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            Profil Saya
+                        </a>
+
                         <a href="{{ route('returns.index') }}"
                            class="group flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-150 relative
                                   {{ request()->routeIs('returns.*') ? 'bg-indigo-500/40 text-white' : 'text-indigo-200/80 hover:text-white hover:bg-indigo-500/20' }}">
@@ -92,6 +105,18 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                             </svg>
                             Retur
+                        </a>
+
+                        <a href="{{ route('users.index') }}"
+                           class="group flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-150 relative
+                                  {{ request()->routeIs('users.*') ? 'bg-indigo-500/40 text-white' : 'text-indigo-200/80 hover:text-white hover:bg-indigo-500/20' }}">
+                            @if(request()->routeIs('users.*'))
+                                <span class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-white"></span>
+                            @endif
+                            <svg class="w-5 h-5 shrink-0 {{ request()->routeIs('users.*') ? '' : 'opacity-70 group-hover:opacity-100' }} transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            Manajemen Pengguna
                         </a>
                     </nav>
 
@@ -132,7 +157,7 @@
             </div>
 
             {{-- Logout Modal --}}
-            <div x-show="showLogoutModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="showLogoutModal = false">
+            <div x-show="showLogoutModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="showLogoutModal = false" @keydown.escape="showLogoutModal = false">
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 text-center">
                     <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
                         <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,13 +170,21 @@
                     <div class="flex justify-center gap-3">
                         <button @click="showLogoutModal = false"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">Batal</button>
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" @submit="showLogoutModal = false">
                             @csrf
                             <button type="submit"
                                     class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">Logout</button>
                         </form>
                     </div>
                 </div>
+            </div>
+
+            {{-- Toast/Alert --}}
+            <div x-show="toast.show" x-transition x-cloak
+                 class="fixed top-4 right-4 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg text-sm font-medium transition-all duration-300"
+                 :class="toast.type === 'success' ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'">
+                <span x-text="toast.message"></span>
+                <button @click="toast.show = false" class="ml-2 text-lg leading-none hover:opacity-70" :class="toast.type === 'success' ? 'text-green-700' : 'text-red-700'">&times;</button>
             </div>
         </div>
     </body>

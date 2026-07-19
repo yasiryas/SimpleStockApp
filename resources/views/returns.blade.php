@@ -11,15 +11,53 @@
         </template>
 
         {{-- Actions --}}
-        <div class="flex justify-end">
-            <button @click="openCreate()"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white text-sm font-semibold rounded-lg hover:bg-yellow-700 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div class="relative w-full sm:w-auto">
+                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
-                Ajukan Retur
-            </button>
+                <input type="text" x-model="search" @input.debounce.300ms="fetchReturns()"
+                       placeholder="Cari (Produk, Alasan, Status, Shipment, User)..."
+                       class="pl-9 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 w-64">
+            </div>
+            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                <button @click="openFilter" type="button"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-200 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 18a1 1 0 01-1-1V6a1 1 0 011-1h12a1 1 0 011 1v11a1 1 0 01-1 1H5z"/>
+                    </svg>
+                    Filter Tanggal
+                </button>
+                <a href="{{ route('returns.export', request()->query()) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Export Excel
+                </a>
+                <button @click="openCreate()"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white text-sm font-semibold rounded-lg hover:bg-yellow-700 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Ajukan Retur
+                </button>
+            </div>
         </div>
+
+        {{-- Active Filter Indicator --}}
+        <template x-if="dateFrom || dateTo">
+            <div class="flex items-center gap-2 px-3 py-2 bg-indigo-50 border border-indigo-200 rounded-lg">
+                <span class="text-sm text-indigo-700">
+                    Filter aktif: 
+                    <span x-show="dateFrom" class="font-medium" x-text="formatDateOnly(dateFrom)"></span>
+                    <span x-show="dateFrom && dateTo" class="mx-1">-</span>
+                    <span x-show="dateTo" class="font-medium" x-text="formatDateOnly(dateTo)"></span>
+                </span>
+                <button @click="clearFilter" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Hapus</button>
+            </div>
+        </template>
 
         {{-- Table --}}
         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -38,44 +76,62 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        @forelse ($returns as $return)
+                        <template x-for="r in returns" :key="r.id">
                             <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap">{{ $return->created_at->format('d M H:i') }}</td>
-                                <td class="px-5 py-3.5 font-medium text-gray-900">{{ $return->product->nama ?? '-' }}</td>
-                                <td class="px-5 py-3.5 font-mono text-gray-900">{{ $return->qty }}</td>
-                                <td class="px-5 py-3.5 font-mono text-xs text-gray-500">{{ $return->shipment->no_shipment ?? '-' }}</td>
-                                <td class="px-5 py-3.5 text-gray-500 max-w-[200px] truncate">{{ $return->alasan }}</td>
+                                <td class="px-5 py-3.5 text-gray-500 whitespace-nowrap" x-text="formatDate(r.created_at)"></td>
+                                <td class="px-5 py-3.5 font-medium text-gray-900" x-text="r.product?.nama || '-'"></td>
+                                <td class="px-5 py-3.5 font-mono text-gray-900" x-text="r.qty"></td>
+                                <td class="px-5 py-3.5 font-mono text-xs text-gray-500" x-text="r.shipment?.no_shipment || '-'"></td>
+                                <td class="px-5 py-3.5 text-gray-500 max-w-[200px] truncate" x-text="r.alasan"></td>
                                 <td class="px-5 py-3.5">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold
-                                        {{ $return->status === 'disetujui' ? 'bg-green-50 text-green-700' : ($return->status === 'ditolak' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700') }}">
-                                        {{ strtoupper($return->status) }}
-                                    </span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold"
+                                          :class="r.status === 'disetujui' ? 'bg-green-50 text-green-700' : (r.status === 'ditolak' ? 'bg-red-50 text-red-700' : 'bg-yellow-50 text-yellow-700')"
+                                          x-text="r.status.toUpperCase()"></span>
                                 </td>
-                                <td class="px-5 py-3.5 text-gray-500">{{ $return->user->name ?? '-' }}</td>
+                                <td class="px-5 py-3.5 text-gray-500" x-text="r.user?.name || '-'"></td>
                                 <td class="px-5 py-3.5 text-right">
-                                    @if ($return->status === 'pending')
-                                        <button @click="openConfirmApprove({{ $return->id }}, '{{ $return->product->nama ?? '-' }}')"
+                                    <template x-if="r.status === 'pending'">
+                                        <button @click="openConfirmApprove(r.id, r.product?.nama || '-')"
                                                 class="text-green-600 hover:text-green-800 text-sm font-medium mr-2">Setujui</button>
-                                        <button @click="openConfirmReject({{ $return->id }}, '{{ $return->product->nama ?? '-' }}')"
+                                        <button @click="openConfirmReject(r.id, r.product?.nama || '-')"
                                                 class="text-red-500 hover:text-red-700 text-sm font-medium">Tolak</button>
-                                    @else
+                                    </template>
+                                    <template x-if="r.status !== 'pending'">
                                         <span class="text-gray-400 text-sm">-</span>
-                                    @endif
+                                    </template>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="8" class="px-5 py-10 text-center text-gray-400">Belum ada retur.</td>
-                            </tr>
-                        @endforelse
+                        </template>
+                        <tr x-show="returns.length === 0">
+                            <td colspan="8" class="px-5 py-10 text-center text-gray-400">Belum ada retur.</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
+            {{-- Pagination --}}
+            <template x-if="pagination && pagination.last_page > 1">
+                <div class="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+                    <div class="text-sm text-gray-500" x-text="paginationText"></div>
+                    <div class="flex gap-1">
+                        <button @click="goToPage(pagination.current_page - 1)" :disabled="pagination.current_page === 1"
+                                class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">Sebelumnya</button>
+                        <template x-for="page in paginationPages" :key="page">
+                            <button @click="goToPage(page)"
+                                    class="w-8 h-8 text-sm font-medium rounded-lg transition-colors"
+                                    :class="page === pagination.current_page ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'"
+                                    x-text="page"></button>
+                        </template>
+                        <button @click="goToPage(pagination.current_page + 1)" :disabled="pagination.current_page === pagination.last_page"
+                                class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">Selanjutnya</button>
+                    </div>
+                </div>
+            </template>
         </div>
 
         {{-- Modal Create --}}
-        <div x-show="showModal" x-cloak class="fixed inset-0 z-40 flex items-center justify-center bg-black/40" @click.self="closeModal()">
-            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+        <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeModal()" @keydown.escape="closeModal()">
+            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5">Ajukan Retur</h3>
 
                 <form action="{{ route('return.store') }}" method="POST">
@@ -119,11 +175,13 @@
                     </div>
                 </form>
             </div>
+            </div>
         </div>
 
         {{-- Modal Confirm Approve --}}
-        <div x-show="showConfirmApprove" x-cloak class="fixed inset-0 z-40 flex items-center justify-center bg-black/40" @click.self="closeConfirmApprove()">
-            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 text-center">
+        <div x-show="showConfirmApprove" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeConfirmApprove()" @keydown.escape="closeConfirmApprove()">
+            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -144,11 +202,13 @@
                     </div>
                 </form>
             </div>
+            </div>
         </div>
 
         {{-- Modal Confirm Reject --}}
-        <div x-show="showConfirmReject" x-cloak class="fixed inset-0 z-40 flex items-center justify-center bg-black/40" @click.self="closeConfirmReject()">
-            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 p-6 text-center">
+        <div x-show="showConfirmReject" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeConfirmReject()" @keydown.escape="closeConfirmReject()">
+            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -167,6 +227,36 @@
                                 class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors">Tolak</button>
                     </div>
                 </form>
+            </div>
+            </div>
+        </div>
+
+        {{-- Modal Filter Tanggal --}}
+        <div x-show="showFilterModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-black/40" @click.self="closeFilter()" @keydown.escape="closeFilter()">
+            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-5">Filter Tanggal</h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Dari Tanggal</label>
+                        <input type="date" x-model="dateFrom"
+                               class="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Sampai Tanggal</label>
+                        <input type="date" x-model="dateTo"
+                               class="w-full border-gray-300 rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" @click="closeFilter()"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">Batal</button>
+                    <button type="button" @click="applyFilter()"
+                            class="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors">Terapkan</button>
+                </div>
+            </div>
             </div>
         </div>
 
@@ -193,6 +283,87 @@
                 showConfirmReject: false,
                 confirmRejectId: null,
                 confirmRejectProduct: '',
+                // AJAX search
+                search: '',
+                returns: [],
+                pagination: { current_page: 1, last_page: 1, from: 0, to: 0, total: 0 },
+                currentPage: 1,
+                dateFrom: '',
+                dateTo: '',
+                showFilterModal: false,
+
+                async init() {
+                    await this.fetchReturns();
+                },
+
+                async fetchReturns() {
+                    try {
+                        const params = new URLSearchParams();
+                        if (this.search) params.set('search', this.search);
+                        if (this.dateFrom) params.set('date_from', this.dateFrom);
+                        if (this.dateTo) params.set('date_to', this.dateTo);
+                        params.set('page', this.currentPage);
+
+                        const response = await fetch('{{ route('returns.index') }}?' + params.toString(), {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        const data = await response.json();
+                        this.returns = data.returns;
+                        this.pagination = data.pagination;
+                    } catch (e) {
+                        console.error('Failed to fetch returns:', e);
+                    }
+                },
+
+                get paginationPages() {
+                    if (!this.pagination) return [];
+                    const pages = [];
+                    const start = Math.max(1, this.pagination.current_page - 2);
+                    const end = Math.min(this.pagination.last_page, start + 4);
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    return pages;
+                },
+
+                get paginationText() {
+                    if (!this.pagination) return '';
+                    return `Menampilkan ${this.pagination.from} - ${this.pagination.to} dari ${this.pagination.total} data`;
+                },
+
+                async goToPage(page) {
+                    if (page < 1 || (this.pagination && page > this.pagination.last_page)) return;
+                    this.currentPage = page;
+                    await this.fetchReturns();
+                },
+
+                formatDate(dateStr) {
+                    const d = new Date(dateStr);
+                    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }).replace(',', '');
+                },
+
+                formatDateOnly(dateStr) {
+                    const d = new Date(dateStr);
+                    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+                },
+
+                openFilter() {
+                    this.showFilterModal = true;
+                },
+
+                closeFilter() {
+                    this.showFilterModal = false;
+                },
+
+                clearFilter() {
+                    this.dateFrom = '';
+                    this.dateTo = '';
+                    this.fetchReturns();
+                },
+
+                async applyFilter() {
+                    this.closeFilter();
+                    await this.fetchReturns();
+                },
+
                 openCreate() {
                     this.showModal = true;
                 },
@@ -223,3 +394,4 @@
         }
     </script>
 </x-app-layout>
+

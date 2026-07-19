@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\StockReturnController;
+use App\Http\Controllers\UserController;
 use App\Models\Product;
 use App\Models\Shipment;
 use App\Models\StockMovement;
@@ -31,22 +32,15 @@ Route::middleware('auth')->group(function () {
     Route::put('/products/{product}',  [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
+    // Stock API (AJAX polling)
+    Route::get('/products/stock', [ProductController::class, 'getStock'])->name('products.stock');
+
     // Stock mutations
-    Route::get('/stock', function () {
-        return view('stock', [
-            'products'  => Product::orderBy('nama')->get(),
-            'movements' => StockMovement::with('product', 'user')->latest()->paginate(20),
-        ]);
-    })->name('stock.index');
+    Route::get('/stock', [StockController::class, 'index'])->name('stock.index');
     Route::post('/stock/in',     [StockController::class, 'storeStockIn'])->name('stock.in');
     Route::post('/stock/out',    [StockController::class, 'storeStockOut'])->name('stock.out');
     // Shipments
-    Route::get('/shipments', function () {
-        return view('shipments', [
-            'products'  => Product::orderBy('nama')->get(),
-            'shipments' => Shipment::with('items.product', 'user')->latest()->get(),
-        ]);
-    })->name('shipments.index');
+    Route::get('/shipments', [ShipmentController::class, 'index'])->name('shipments.index');
     Route::post('/shipment', [ShipmentController::class, 'store'])->name('shipment.store');
     Route::post('/shipment/{shipment}/mark-sent',     [ShipmentController::class, 'markSent'])->name('shipment.mark-sent');
     Route::post('/shipment/{shipment}/mark-done',     [ShipmentController::class, 'markDone'])->name('shipment.mark-done');
@@ -56,6 +50,23 @@ Route::middleware('auth')->group(function () {
     Route::post('/return',  [StockReturnController::class, 'store'])->name('return.store');
     Route::post('/return/{return}/approve', [StockReturnController::class, 'approve'])->name('return.approve');
     Route::post('/return/{return}/reject',  [StockReturnController::class, 'reject'])->name('return.reject');
+
+    // User Management
+    Route::resource('users', UserController::class)->except(['show']);
+    Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
+
+    // Products export
+    Route::get('/products/export', [ProductController::class, 'export'])->name('products.export');
+
+    // Stock export
+    Route::get('/stock/export', [StockController::class, 'export'])->name('stock.export');
+
+    // Shipments export
+    Route::get('/shipments/export', [ShipmentController::class, 'export'])->name('shipments.export');
+
+    // Returns export
+    Route::get('/returns/export', [StockReturnController::class, 'export'])->name('returns.export');
 });
 
 require __DIR__.'/auth.php';
+
