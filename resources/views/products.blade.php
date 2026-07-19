@@ -2,13 +2,6 @@
     <x-slot name="header">Produk</x-slot>
 
     <div x-data="productModal()" class="space-y-4">
-        {{-- Toast --}}
-        <template x-teleport="body">
-            <div x-show="showToast" x-transition x-cloak
-                 class="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 text-green-700 px-5 py-3 rounded-xl shadow-lg text-sm font-medium">
-                <span x-text="toastMessage"></span>
-            </div>
-        </template>
 
         {{-- Actions --}}
         <div class="flex justify-between items-center">
@@ -97,11 +90,11 @@
         {{-- Modal Create/Edit --}}
         <div x-show="showForm" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
         <div x-show="showForm" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeForm()" @keydown.escape="closeForm()">
-            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="flex items-center justify-center min-h-screen px-4">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5" x-text="editId ? 'Edit Produk' : 'Tambah Produk'"></h3>
 
-                <form :action="editId ? '/products/' + editId : '{{ route('products.store') }}'" method="POST">
+                <form @submit.prevent="submitForm" method="POST">
                     @csrf
                     <input type="hidden" name="_method" :value="editId ? 'PUT' : 'POST'">
 
@@ -140,7 +133,7 @@
         {{-- Modal Delete --}}
         <div x-show="showDelete" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
         <div x-show="showDelete" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeDelete()" @keydown.escape="closeDelete()">
-            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="flex items-center justify-center min-h-screen px-4">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,9 +143,9 @@
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Hapus Produk</h3>
                 <p class="text-sm text-gray-500 mb-6">Yakin ingin menghapus <span class="font-medium text-gray-700" x-text="deleteName"></span>?</p>
 
-                <form :action="'/products/' + deleteId" method="POST">
+                <form @submit.prevent="confirmDelete" method="POST">
                     @csrf
-                    @method('DELETE')
+                    <input type="hidden" name="_method" value="DELETE">
                     <div class="flex justify-center gap-3">
                         <button type="button" @click="closeDelete()"
                                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">Batal</button>
@@ -164,13 +157,6 @@
             </div>
         </div>
 
-        @if (session('success'))
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    Alpine.store('toast', { show: true, message: '{{ session('success') }}' });
-                });
-            </script>
-        @endif
     </div>
 
     <script>
@@ -178,8 +164,8 @@
             return {
                 showForm: false,
                 showDelete: false,
-                showToast: {{ session('success') ? 'true' : 'false' }},
-                toastMessage: '{{ session('success') ?? '' }}',
+                submitting: false,
+                pollingInterval: null,
                 editId: null,
                 deleteId: null,
                 deleteName: '',
@@ -191,6 +177,10 @@
 
                 async init() {
                     await this.fetchProducts();
+                    @if (session('success'))
+                        this.$root.showToast('{{ session('success') }}');
+                    @endif
+                    this.pollingInterval = setInterval(() => this.fetchProducts(), 30000);
                 },
 
                 async fetchProducts() {
@@ -228,6 +218,74 @@
                     if (page < 1 || (this.pagination && page > this.pagination.last_page)) return;
                     this.currentPage = page;
                     await this.fetchProducts();
+                },
+
+                async submitForm(event) {
+                    const form = event.target;
+                    const formData = new FormData(form);
+
+                    try {
+                        this.submitting = true;
+                        const url = this.editId ? '/products/' + this.editId : '{{ route('products.store') }}';
+                        const method = this.editId ? 'PUT' : 'POST';
+
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        });
+
+                        if (response.ok) {
+                            this.showToast(this.editId ? 'Produk berhasil diubah' : 'Produk berhasil ditambahkan');
+                            this.closeForm();
+                            await this.fetchProducts();
+                        } else {
+                            const data = await response.json();
+                            const msg = data.message || (data.errors ? Object.values(data.errors).flat().join(', ') : 'Gagal menyimpan produk');
+                            this.showToast(msg, 'error');
+                        }
+                    } catch (e) {
+                        console.error('Submit error:', e);
+                        this.showToast('Terjadi kesalahan jaringan', 'error');
+                    } finally {
+                        this.submitting = false;
+                    }
+                },
+
+                async confirmDelete() {
+                    if (!this.deleteId) return;
+
+                    try {
+                        const response = await fetch('/products/' + this.deleteId, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: new URLSearchParams({ _method: 'DELETE', _token: '{{ csrf_token() }}' })
+                        });
+
+                        if (response.ok) {
+                            this.showToast('Produk berhasil dihapus');
+                            this.closeDelete();
+                            await this.fetchProducts();
+                        } else {
+                            const data = await response.json();
+                            this.showToast(data.message || 'Gagal menghapus produk', 'error');
+                        }
+                    } catch (e) {
+                        console.error('Delete error:', e);
+                        this.showToast('Terjadi kesalahan jaringan', 'error');
+                    }
+                },
+
+                showToast(message, type = 'success') {
+                    if (this.$root.showToast) this.$root.showToast(message, type);
                 },
 
                 openCreate() {

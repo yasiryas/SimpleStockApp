@@ -2,14 +2,6 @@
     <x-slot name="header">Retur</x-slot>
 
     <div x-data="returnModal()" class="space-y-4">
-        {{-- Toast --}}
-        <template x-teleport="body">
-            <div x-show="showToast" x-transition x-cloak
-                 class="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 text-green-700 px-5 py-3 rounded-xl shadow-lg text-sm font-medium">
-                <span x-text="toastMessage"></span>
-            </div>
-        </template>
-
         {{-- Actions --}}
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
             <div class="relative w-full sm:w-auto">
@@ -131,7 +123,7 @@
         {{-- Modal Create --}}
         <div x-show="showModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
         <div x-show="showModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeModal()" @keydown.escape="closeModal()">
-            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="flex items-center justify-center min-h-screen px-4">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5">Ajukan Retur</h3>
 
@@ -182,7 +174,7 @@
         {{-- Modal Confirm Approve --}}
         <div x-show="showConfirmApprove" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
         <div x-show="showConfirmApprove" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeConfirmApprove()" @keydown.escape="closeConfirmApprove()">
-            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="flex items-center justify-center min-h-screen px-4">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +202,7 @@
         {{-- Modal Confirm Reject --}}
         <div x-show="showConfirmReject" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
         <div x-show="showConfirmReject" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeConfirmReject()" @keydown.escape="closeConfirmReject()">
-            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="flex items-center justify-center min-h-screen px-4">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 text-center">
                 <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,7 +229,7 @@
         {{-- Modal Filter Tanggal --}}
         <div x-show="showFilterModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm"></div>
         <div x-show="showFilterModal" x-cloak x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-4" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeFilter()" @keydown.escape="closeFilter()">
-            <div class="flex items-start justify-center min-h-screen px-4 pt-10 pb-6">
+            <div class="flex items-center justify-center min-h-screen px-4">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-5">Filter Tanggal</h3>
 
@@ -277,8 +269,6 @@
         function returnModal() {
             return {
                 showModal: false,
-                showToast: {{ session('success') ? 'true' : 'false' }},
-                toastMessage: '{{ session('success') ?? '' }}',
                 // Confirm Approve
                 showConfirmApprove: false,
                 confirmApproveId: null,
@@ -298,6 +288,10 @@
 
                 async init() {
                     await this.fetchReturns();
+                    @if (session('success'))
+                        this.$root.showToast('{{ session('success') }}');
+                    @endif
+                    setInterval(() => this.fetchReturns(), 30000);
                 },
 
                 async fetchReturns() {
