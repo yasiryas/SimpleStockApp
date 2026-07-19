@@ -78,8 +78,10 @@
                                           x-text="s.status.toUpperCase()"></span>
                                 </td>
                                 <td class="px-5 py-3.5 text-gray-900">
-                                    <span x-text="s.items_count + ' item'"></span>
-                                    <span x-show="s.items.length" class="text-xs text-gray-400 ml-1" x-text="'(' + [...new Set(s.items.map(i => i.product?.satuan))].filter(Boolean).join(', ') + ')'"></span>
+                                    <template x-for="(item, idx) in s.items.slice(0, 3)" :key="idx">
+                                        <div class="text-xs leading-5" x-text="item.product?.nama + ' (' + (item.product?.satuan || '-') + ') x' + item.qty"></div>
+                                    </template>
+                                    <div x-show="s.items.length > 3" class="text-xs text-gray-400 leading-5" x-text="'... dan ' + (s.items.length - 3) + ' lainnya'"></div>
                                 </td>
                                 <td class="px-5 py-3.5 font-mono text-gray-900" x-text="s.total_qty"></td>
                                 <td class="px-5 py-3.5 text-gray-500" x-text="s.user?.name || '-'"></td>
