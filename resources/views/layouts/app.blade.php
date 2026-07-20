@@ -103,7 +103,7 @@
                 </div>
 
                 {{-- Nav --}}
-                <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+                <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto sidebar-scroll">
                     <template x-if="!$store.sidebar.collapsed">
                         <p class="px-3 pb-2 text-xs font-semibold text-indigo-300/70 uppercase tracking-widest">Menu Utama</p>
                     </template>
