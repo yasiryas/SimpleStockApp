@@ -13,6 +13,10 @@ class Product extends Model
         'stok_saat_ini',
     ];
 
+    protected $casts = [
+        'stok_saat_ini' => 'integer',
+    ];
+
     public function stockMovements()
     {
         return $this->hasMany(StockMovement::class);

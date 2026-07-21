@@ -236,7 +236,7 @@
                         const data = await response.json();
                         this.products = Object.entries(data.products).map(([id, info]) => ({
                             id: parseInt(id),
-                            stok_saat_ini: info.stok_saat_ini,
+                            stok_saat_ini: parseInt(info.stok_saat_ini) || 0,
                             nama: info.nama,
                             sku: info.sku,
                             satuan: info.satuan,
