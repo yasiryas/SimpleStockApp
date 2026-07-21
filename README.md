@@ -111,8 +111,10 @@ Akses di `http://localhost:8000`. Daftarkan akun pertama sebagai **admin**.
 | Manajemen Pengguna | **Admin** saja |
 
 ## Screenshots
+<img width="469" height="412" alt="image" src="https://github.com/user-attachments/assets/c275c6f8-4920-4139-a08a-a72ea9ccdd15" />
+<img width="478" height="275" alt="image" src="https://github.com/user-attachments/assets/389c3318-76ea-41f5-8f17-67a6c924178c" />
 
-> *(Tambahkan screenshot aplikasi di sini)*
+
 
 ## Lisensi
 
